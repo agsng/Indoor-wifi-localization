@@ -1,6 +1,8 @@
 
 def main():
-	import os, sys, time, threading, multiprocessing
+	f = 0
+	px, py = 0, 0
+	import os, sys, time, threading, multiprocessing, math
 
 	#position.py code
 
@@ -47,7 +49,7 @@ def main():
 			print (i,'   ',)
 			for j in dict_wifi[i]:
 				print(j)
-				#print (j,'    ',)				kya hai ye????
+				#print (j,'    ',)				
 			print ('\n')"""
 	############################################################################################################
 
@@ -61,7 +63,8 @@ def main():
 
 	c= 0
 	#l = {1: ['(0,2).csv', c], 2: ['(0,4).csv', c], 3: ['(0,6).csv', c], 4: ['(0,8).csv', c], 5: ['(0,0).csv', c],6: ['(2,0).csv', c], 7: ['(4,0).csv', c], 8: ['(6,0).csv', c], 9: ['(8,0).csv', c], 10: ['(0,-2).csv', c],11: ['(0,-4).csv', c], 12: ['(0,-6).csv', c], 13: ['(0,-8).csv', c], 14: ['(0,-10).csv', c], 15: ['(-2,0).csv', c], 16: ['(-4,0).csv', c], 17: ['(-6,0).csv', c], 18: ['(-8,0).csv', c], 19: ['(4,4).csv', c], 20: ['(6,4).csv', c],21: ['(5,-4).csv', c], 22: ['(-6,5).csv', c], 23: ['(-4,-4).csv', c], 24: ['(-6,-8).csv', c]}
-	l = {1: ['(0,2)u.csv', c], 2: ['(0,4)u.csv', c], 3: ['(0,6)u.csv', c], 4: ['(0,8)u.csv', c], 5: ['(0,0)u.csv', c],6: ['(2,0)u.csv', c], 7: ['(4,0)u.csv', c], 8: ['(6,0)u.csv', c], 9: ['(8,0)u.csv', c], 10: ['(0,-2)u.csv', c],11: ['(0,-4)u.csv', c], 12: ['(0,-6)u.csv', c], 13: ['(0,-8)u.csv', c], 14: ['(0,-10)u.csv', c], 15: ['(-2,0)u.csv', c], 16: ['(-4,0)u.csv', c], 17: ['(-6,0)u.csv', c], 18: ['(-8,0)u.csv', c], 19: ['(4,4)u.csv', c], 20: ['(6,4)u.csv', c], 21: ['(5,-4)u.csv', c], 22: ['(-6,5)u.csv', c],23: ['(-4,-4)u.csv', c], 24: ['(-6,-8)u.csv', c]}
+	#l = {1: ['(0,2)u.csv', c], 2: ['(0,4)u.csv', c], 3: ['(0,6)u.csv', c], 4: ['(0,8)u.csv', c], 5: ['(0,0)u.csv', c],6: ['(2,0)u.csv', c], 7: ['(4,0)u.csv', c], 8: ['(6,0)u.csv', c], 9: ['(8,0)u.csv', c], 10: ['(0,-2)u.csv', c],11: ['(0,-4)u.csv', c], 12: ['(0,-6)u.csv', c], 13: ['(0,-8)u.csv', c], 14: ['(0,-10)u.csv', c], 15: ['(-2,0)u.csv', c], 16: ['(-4,0)u.csv', c], 17: ['(-6,0)u.csv', c], 18: ['(-8,0)u.csv', c], 19: ['(4,4)u.csv', c], 20: ['(6,4)u.csv', c], 21: ['(5,-4)u.csv', c], 22: ['(-6,5)u.csv', c],23: ['(-4,-4)u.csv', c], 24: ['(-6,-8)u.csv', c]}
+	l = {1: ['(0,2)g.csv', c], 2: ['(0,4)g.csv', c], 3: ['(0,6)g.csv', c], 4: ['(0,8)g.csv', c], 5: ['(0,0)g.csv', c],6: ['(2,0)g.csv', c], 7: ['(4,0)g.csv', c], 8: ['(6,0)g.csv', c], 9: ['(8,0)g.csv', c],10: ['(0,-2)g.csv', c], 11: ['(0,-4)g.csv', c], 12: ['(0,-6)g.csv', c], 13: ['(0,-8)g.csv', c],14: ['(0,-10)g.csv', c], 15: ['(-2,0)g.csv', c], 16: ['(-4,0)g.csv', c], 17: ['(-6,0)g.csv', c],18: ['(0,0)g.csv', c], 19: ['(4,4)g.csv', c], 20: ['(6,4)g.csv', c], 21: ['(5,-4)g.csv', c],22: ['(-6,5)g.csv', c], 23: ['(-4,-4)g.csv', c], 24: ['(-6,-8)g.csv', c]}
 
 	numberOfCores=multiprocessing.cpu_count()
 	#print(numberOfCores)
@@ -77,11 +80,9 @@ def main():
 			#print(imac, "-->", istrength)
 			fpd = open(cmd[0])
 			for line in fpd:                        # checking line by line
-				mac, strength = line.split("	")
-				if mac == imac and strength == istrength:
-					#print("hulle hulare, hulle hulle hullare")
+				mac, strength_min, strength_max = line.split("	")
+				if mac == imac and istrength >= strength_min and istrength <= strength_max:
 					cmd[1]  = cmd[1] + 1
-					break
 			# print (mac,"-->",strength)
 			fpd.close()
 		fpi.close()
@@ -98,7 +99,7 @@ def main():
 		t = threading.Thread(target=executeModel, args=(l[i],))
 		t.start()
 		c = c + 1
-		# print("Running ...... ", c, "/", len(modelProgramName))  # change it!!
+		# print("Running ...... ", c, "/", len(file))  # change it!!
 	    # time.sleep(1)
 		while True:
 			if threading.activeCount() <= 12*numberOfCores:
@@ -116,17 +117,37 @@ def main():
 	# Step 9: printing max value
 	# --------------------------------------------------------------
 	maxval = 0
-	for a in l:
-		print(l[a][0], " --> ", l[a][1])
-		if l[a][1] > maxval:
-			maxval = l[a][1]
-			maxpos = l[a][0]
+	thresh=4.5
+	maxfile=0
+	if f==0:
+		for a in l:
+			print(l[a][0], " --> ", l[a][1])
+			if l[a][1] >= maxval:
+				maxval = l[a][1]
+				maxpos = l[a][0]
+		f=1
+	else:
+		while True:
+			for a in l:
+				print(l[a][0], " --> ", l[a][1])
+				if l[a][1] >= maxval:
+					maxval = l[a][1]
+					maxpos = l[a][0]
+					maxfile = a
+			curr_file = maxpos.strip("()gcsv.")
+			curr_cood= curr_file.split(",")
+			d=math.sqrt(math.pow(curr_cood[0]-px,2)+math.pow(curr_cood[1]-py,2))
+			if d<=thresh:
+				break
+			else:
+				l[maxfile][1]=0
 	print("\nYou are here-->", maxpos, "=", maxval)
 
 
-	lc1 = maxpos.strip("()ucsv.")
+	lc1 = maxpos.strip("()gcsv.")
 	lc2 = lc1.split(",")
-
+	px=lc2[0]
+	py=lc2[1]
 	r = open("cood.csv", 'a')
 	r.write(lc2[0] + "\t" + lc2[1]+"\n")
 	r.close()
@@ -143,3 +164,5 @@ def main():
 
 if __name__=="__main__":
 	main()
+
+
